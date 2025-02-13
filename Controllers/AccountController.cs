@@ -13,6 +13,8 @@ namespace LoginApi.Controllers
     {
         // Danh sách lưu trữ tài khoản trên server
         private static List<Account> accounts = new List<Account>();
+        private static int totalAmount = 500000;
+        private static Boolean isLogin = false;
 
         [HttpGet("all")]
         public IActionResult GetAllUsers()
@@ -53,7 +55,47 @@ namespace LoginApi.Controllers
                 return Unauthorized("Mật khẩu không chính xác!");
             }
 
+            totalAmount = 500000;
+            isLogin = true;
             return Ok("Đăng nhập thành công!");
+        }
+
+        [HttpPost("dice")]
+        public IActionResult dice([FromBody] DiceRequest request)
+        {
+            if (!isLogin)
+            {
+                return BadRequest("Vui lòng đăng nhập trước khi chơi.");
+            }
+            if (request.BetAmount <= 0)
+            {
+                return BadRequest("Số tiền cược phải lớn hơn 0.");
+            }
+            if (request.BetAmount > totalAmount)
+            {
+                return BadRequest("Số tiền cược phải nhỏ hơn số tiền hiện có.");
+            }
+
+            if (request.BetType != "even" && request.BetType != "odd")
+            {
+                return BadRequest("Loại cược phải là 'chẵn' hoặc 'lẻ'.");
+            }
+
+            Random random = new Random();
+            int randomNumber = random.Next(1, 3);
+
+            string result = (randomNumber % 2 == 0) ? "even" : "odd";
+
+            if ((request.BetType == "even" && result == "even") || (request.BetType == "odd" && result == "odd"))
+            {
+                totalAmount += request.BetAmount;
+                return Ok(new { Result = result, TotalAmount = totalAmount });
+            }
+            else
+            {
+                totalAmount -= request.BetAmount;
+                return Ok(new { Result = result, TotalAmount = totalAmount });
+            }
         }
     }    
 }
