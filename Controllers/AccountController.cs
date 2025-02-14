@@ -57,7 +57,7 @@ namespace LoginApi.Controllers
 
             totalAmount = 500000;
             isLogin = true;
-            return Ok("Đăng nhập thành công!");
+            return Ok(new { Result = "Đăng nhập thành công!", TotalAmount = totalAmount });
         }
 
         [HttpPost("dice")]
