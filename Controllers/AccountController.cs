@@ -82,20 +82,20 @@ namespace LoginApi.Controllers
             }
 
             Random random = new Random();
-            int randomNumber = random.Next(1, 3);
+            int randomNumber = random.Next(1, 9);
 
             string result = (randomNumber % 2 == 0) ? "even" : "odd";
 
             if ((request.BetType == "even" && result == "even") || (request.BetType == "odd" && result == "odd"))
             {
                 totalAmount += request.BetAmount;
-                return Ok(new { Result = result, TotalAmount = totalAmount });
             }
             else
             {
                 totalAmount -= request.BetAmount;
-                return Ok(new { Result = result, TotalAmount = totalAmount });
             }
+            return Ok(new { Result = randomNumber, TotalAmount = totalAmount });
+
         }
     }    
 }
